@@ -4,9 +4,9 @@
 Describe your game here.
 
 ### Group members:
-- member 1
-- member 2
-- etc...
+- Max Huang
+- Emily Cheng
+- Oscar Sun
 
 
 ---
