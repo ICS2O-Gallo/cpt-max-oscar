@@ -48,29 +48,29 @@ def draw_circle_alpha(surface, color, center, radius):
     pygame.draw.circle(shape_surf, color, (radius, radius), radius)
     surface.blit(shape_surf, target_rect)
 
-def draw_circuit(screen, x, y):
+def draw_circuit(screen, x, y, list):
     pygame.draw.rect(screen, WHITE, [x, y, 450, 450], 10)
+    pygame.draw.line(screen, list[1], [x+100,y+350],[x+50,y+350],5)
+    pygame.draw.line(screen, list[1], [x+50,y+350],[x+50,y+50],5)
+    pygame.draw.line(screen, list[2], [x+50,y+50],[x+150,y+50],5)
+    pygame.draw.line(screen, list[3], [x+150,y+50],[x+150,y+250],5)
+    pygame.draw.line(screen, list[4], [x+250,y+250],[x+150,y+250],5)
+    pygame.draw.line(screen, list[5], [x+250,y+250],[x+250,y+70],5)
+    pygame.draw.line(screen, list[6], [x+300,y+70],[x+250,y+70],5)
+    pygame.draw.line(screen, list[7], [x+300,y+70],[x+300,y+200],5)
+    pygame.draw.line(screen, list[8], [x+350,y+200],[x+300,y+200],5)
+    pygame.draw.line(screen, list[9], [x+350,y+200],[x+350,y+100],5)
+    pygame.draw.line(screen, list[10], [x+175,y+100],[x+350,y+100],5)
+    pygame.draw.line(screen, list[11], [x+175,y+100],[x+175,y+30],5)
+    pygame.draw.line(screen, list[12], [x+400,y+30],[x+175,y+30],5)
+    pygame.draw.line(screen, list[13], [x+400,y+30],[x+400,260],5)
+    pygame.draw.line(screen, list[14], [800,260],[x+400,260],5)
+    pygame.draw.line(screen, list[15], [800,260],[1100,260],5)
+    pygame.draw.line(screen, list[16], [1100,260],[1100,150],5)
+    pygame.draw.line(screen, list[17], [570,150],[1100,150],5)
+    pygame.draw.line(screen, list[18], [570,150],[570,y+350],5)
+    pygame.draw.line(screen, list[19], [x+350,y+350],[570,y+350],5)
     draw_battery(screen,x+100,y+300,250,100)
-    pygame.draw.line(screen, GREY, [x+100,y+350],[x+50,y+350],5)
-    pygame.draw.line(screen, GREY, [x+50,y+350],[x+50,y+50],5)
-    pygame.draw.line(screen, GREY, [x+50,y+50],[x+150,y+50],5)
-    pygame.draw.line(screen, GREY, [x+150,y+50],[x+150,y+250],5)
-    pygame.draw.line(screen, GREY, [x+250,y+250],[x+150,y+250],5)
-    pygame.draw.line(screen, GREY, [x+250,y+250],[x+250,y+70],5)
-    pygame.draw.line(screen, GREY, [x+300,y+70],[x+250,y+70],5)
-    pygame.draw.line(screen, GREY, [x+300,y+70],[x+300,y+200],5)
-    pygame.draw.line(screen, GREY, [x+350,y+200],[x+300,y+200],5)
-    pygame.draw.line(screen, GREY, [x+350,y+200],[x+350,y+100],5)
-    pygame.draw.line(screen, GREY, [x+175,y+100],[x+350,y+100],5)
-    pygame.draw.line(screen, GREY, [x+175,y+100],[x+175,y+30],5)
-    pygame.draw.line(screen, GREY, [x+400,y+30],[x+175,y+30],5)
-    pygame.draw.line(screen, GREY, [x+400,y+30],[x+400,260],5)
-    pygame.draw.line(screen, GREY, [800,260],[x+400,260],5)
-    pygame.draw.line(screen, GREY, [800,260],[1100,260],5)
-    pygame.draw.line(screen, GREY, [1100,260],[1100,150],5)
-    pygame.draw.line(screen, GREY, [570,150],[1100,150],5)
-    pygame.draw.line(screen, GREY, [570,150],[570,y+350],5)
-    pygame.draw.line(screen, GREY, [x+350,y+350],[570,y+350],5)
     
     
 WIDTH = 1280
@@ -80,6 +80,7 @@ window = pygame.display.set_mode(SIZE)
 clock = pygame.time.Clock()
 button_click = 0
 button = pygame.Rect(1030,350,200,200)
+click = 0
 
 pygame.display.set_caption("Oscar's room")
 font = pygame.font.SysFont('verdana', 20)
@@ -91,6 +92,7 @@ running = True
 # ---------------------------
 while running:
     seconds = round(pygame.time.get_ticks() - start_ticks / 1000)
+    wire_color = [GREY] * 20
     for event in pygame.event.get():
         if event.type == KEYDOWN:
             if event.key == K_ESCAPE:
@@ -99,16 +101,24 @@ while running:
             running = False
         elif event.type == MOUSEBUTTONDOWN:
             mouse_x, mouse_y = event.pos
-            if button.collidepoint(mouse_x, mouse_y):
-                button_click += 1
-                print(button_click)
+            distance = math.sqrt((mouse_x-1130) ** 2 + (mouse_y-450) ** 2)
+            if distance <= 100:
+                click = 1
             else:
+                click = 0
                 button_click = 0
-    print(event.pos)
+    
+    button_click += click
+    for i in range (0, 20):
+        if button_click > 50 * i:
+            for j in range(0, i):
+                wire_color[i] = WHITE
+    print(wire_color[0])
+    
     
     window.fill(BLACK)
     draw_lightbulb(window, 700, 10, 200)
-    draw_circuit(window, 20, 20)
+    draw_circuit(window, 20, 20, wire_color)
     pygame.draw.circle(window, RED, [1130, 450],100)
 
     font_1 = pygame.font.SysFont("verdana", 20, True, True)
