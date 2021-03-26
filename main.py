@@ -1,3 +1,154 @@
+# Emily C's room
+import pygame
+from pygame.locals import MOUSEBUTTONDOWN, K_LEFT, K_RIGHT
+
+# Define some colors
+BLACK = (0, 0, 0)
+GRAY = (100, 94, 94)
+WHITE = (255, 255, 255)
+GREEN = (0, 255, 0)
+BUTTONRED = (184, 70, 71)
+OFFRED = (103, 50, 43)
+
+pygame.init()
+
+# Set the width and height of the screen [width, height]
+size = (1280, 720)
+screen = pygame.display.set_mode(size)
+pygame.display.set_caption("Emily's level")
+
+# images
+pointer = pygame.image.load("pointer.png").convert_alpha()
+firstbackground = pygame.image.load("background1.png").convert()
+secondbackground = pygame.image.load("background2.png").convert()
+character = pygame.image.load("character1.png").convert_alpha()
+
+# door
+def door():
+    pygame.draw.rect(screen, BLACK, [570, 0, 80, 220])
+    pygame.draw.rect(screen, BLACK, [570, 500, 80, 220])
+    pygame.draw.rect(screen, GRAY, [570, 220 - door_animation, 80, 140])
+    pygame.draw.rect(screen, GRAY, [570, 360 + door_animation, 80, 140])
+door_animation = 0
+
+button = pygame.Rect(650, 530, 30, 100)
+
+# speech bubble
+def bubble():
+    pygame.draw.rect(screen, WHITE, [bubble_x, bubble_y, 305, 170])
+
+def instruction_one():
+    font = pygame.font.SysFont("Comic Sans", 30, False, False)
+    text = font.render("There seems to be something", True, BLACK)
+    screen.blit(text, [867, 165])
+    text = font.render("wrong with the electricity.", True, BLACK)
+    screen.blit(text, [867, 195])
+    font = pygame.font.SysFont("Comic Sans", 23, False, False)
+    text = font.render("Click anywhere to continue.", True, BLACK)
+    screen.blit(text, [867, 239])
+
+def instruction_two():
+    font = pygame.font.SysFont("Comic Sans", 30, False, False)
+    text = font.render("Click the red button to open", True, BLACK)
+    screen.blit(text, [867, 180])
+    text = font.render("the electricity room door", True, BLACK)
+    screen.blit(text, [867, 205])
+
+def firstdoor_instruction():
+    font = pygame.font.SysFont("Comic Sans", 30, False, False)
+    text = font.render("Uh oh! This door is locked!", True, BLACK)
+    screen.blit(text, [895, 325])
+    text = font.render("Looks like you will have to", True, BLACK)
+    screen.blit(text, [895, 385])
+    text = font.render("flip the switches to unlock it!", True, BLACK)
+    screen.blit(text, [895, 415])
+
+done = False
+
+first_stage = 1
+start_instruction = 1
+second_stage = 0
+door_instruction = 1
+
+clock = pygame.time.Clock()
+pygame.mouse.set_visible(0)
+
+# -------- Main Program Loop -----------
+while not done:
+    # --- Main event loop
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            done = True
+        if event.type == MOUSEBUTTONDOWN:
+            start_instruction += 1
+            if second_stage == 1:
+                door_instruction += 1
+            x, y = event.pos
+            print(x, y)
+
+            if button.collidepoint(x, y) and start_instruction > 2:
+                second_stage = 1
+
+            """
+            if button.collidepoint(x, y) and start_instruction > 2:
+                for something in range(3):
+                    door_animation += 5
+            """
+
+    # --- Game logic should go here
+
+    pos = pygame.mouse.get_pos()
+    mouse_x = pos[0]
+    mouse_y = pos[1]
+
+    # --- Screen-clearing code goes here
+
+    # Here, we clear the screen to white. Don't put other drawing commands
+    # above this, or they will be erased with this command.
+
+    # If you want a background image, replace this clear with blit'ing the
+    # background image.
+    screen.fill(WHITE)
+
+    if first_stage == True:
+        screen.blit(firstbackground, [0, 0])
+        screen.blit(character, [700, 300])
+        door()
+        pygame.draw.rect(screen, BUTTONRED, [650, 530, 30, 100])
+        bubble_x = 857
+        bubble_y = 120
+        bubble()
+
+        if start_instruction == 1:
+            instruction_one()
+        if start_instruction >= 2:
+            instruction_two()
+
+    if second_stage == True:
+        first_stage = False
+        screen.blit(secondbackground, [0, 0])
+        bubble_x = 885
+        bubble_y = 300
+        bubble()
+
+        if door_instruction >= 1:
+            firstdoor_instruction()
+
+
+
+    screen.blit(pointer, [mouse_x - 26, mouse_y - 10])
+    # --- Go ahead and update the screen with what we've drawn.
+    pygame.display.flip()
+
+    # --- Limit to 60 frames per second
+    clock.tick(60)
+
+# Close the window and quit.
+pygame.quit()
+
+#
+#
+#
 # Oscar Sun's Room
 import pygame
 pygame.font.init()
