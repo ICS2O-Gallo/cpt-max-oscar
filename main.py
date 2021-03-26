@@ -5,6 +5,7 @@ pygame.font.init()
 from pygame.locals import K_ESCAPE, KEYDOWN, QUIT, MOUSEBUTTONDOWN
 import math
 import random
+import time
 
 pygame.init()
 
@@ -16,7 +17,23 @@ BLUE = (0, 0, 225)
 GREY = (146, 160, 173)
 ORANGE = (206, 120, 11)
 LIGHT_YELLOW = (242, 238, 208)
+CAMERA_GREEN = (0, 255, 187)
+CAMERA_YELLOW = (255, 217, 0)
+SPACE_BLUE = (44, 3, 252)
+PURPLE = (149, 0, 255)
 PI = math.pi
+bulb_color = BLACK
+opacity = 50
+opacity_2 = 200
+radius = 1
+light_bulb_part = True
+camera_part = False
+frame = 0
+first_time = 0
+start_radius = 0
+# for convenience
+test_thing = False
+font = pygame.font.SysFont('verdana', 20)
 
 def draw_battery(screen, x, y, length, width):
     pygame.draw.rect(screen, GREY, [x, y, length, width])
@@ -28,14 +45,13 @@ def draw_lightbulb(screen, x, y, opacity):
     pygame.draw.rect(screen, LIGHT_YELLOW, [x, y, 200, 100])
     for i in range (x, x+100, 20):
         pygame.draw.line(screen, BLACK, [x,y+i-x], [x+200,y+i-x],10)
-    draw_rect_alpha(screen, (250, 250, 250, opacity), [x,y+100,200,150])
-    draw_circle_alpha(screen, (250,250,250,opacity),[x+100,y+423],200)
-    pygame.draw.line(screen, BLACK, [x+100, y+250],[x+30,y+350],7)
-    pygame.draw.line(screen, BLACK, [x+170, y+400],[x+30,y+350],7)
-    pygame.draw.line(screen, BLACK, [x+170, y+400],[x+50,y+430],7)
-    pygame.draw.line(screen, BLACK, [x+150, y+470],[x+50,y+430],7)
-    pygame.draw.line(screen, BLACK, [x+150, y+470],[x+70,y+490],7)
-    pygame.draw.line(screen, BLACK, [x+120, y+510],[x+70,y+490],7)
+    draw_rect_alpha(screen, (153, 208, 255, opacity), [x,y+100,200,150])
+    draw_circle_alpha(screen, (153,208,255,opacity),[x+100,y+362],150)
+    pygame.draw.line(screen, bulb_color, [x+100, y+250],[x+30,y+350],7)
+    pygame.draw.line(screen, bulb_color, [x+170, y+400],[x+30,y+350],7)
+    pygame.draw.line(screen, bulb_color, [x+170, y+400],[x+50,y+430],7)
+    pygame.draw.line(screen, bulb_color, [x+150, y+470],[x+50,y+430],7)
+    pygame.draw.line(screen, bulb_color, [x+150, y+470],[x+70,y+490],7)
 
 def draw_rect_alpha(surface, color, rect):
     shape_surf = pygame.Surface(pygame.Rect(rect).size, pygame.SRCALPHA)
@@ -69,9 +85,28 @@ def draw_circuit(screen, x, y, list):
     pygame.draw.line(screen, list[16], [1100,260],[1100,150],5)
     pygame.draw.line(screen, list[17], [570,150],[1100,150],5)
     pygame.draw.line(screen, list[18], [570,150],[570,y+350],5)
-    pygame.draw.line(screen, list[19], [x+350,y+350],[570,y+350],5)
+    pygame.draw.line(screen, list[18], [x+350,y+350],[570,y+350],5)
     draw_battery(screen,x+100,y+300,250,100)
     
+def draw_camera(screen, x, y, radius):
+    pygame.draw.rect(screen, WHITE, [x,y,1000,500])
+    pygame.draw.rect(screen, CAMERA_GREEN, [x,y+50,1000,400])
+    pygame.draw.rect(screen, CAMERA_GREEN, [x+30,y-50,150,50])
+    pygame.draw.polygon(screen, CAMERA_GREEN, [[x+300,y],[x+700,y],[x+600,y-50],[x+400,y-50]])
+    pygame.draw.rect(screen, CAMERA_GREEN, [x+820,y-50,150,50])
+    pygame.draw.rect(screen, WHITE, [x+450,y-40,100,30])
+    pygame.draw.rect(screen, WHITE, [x+800,y+150,150,50])
+    pygame.draw.circle(screen, CAMERA_YELLOW, [x+500,y+250], 230)
+    pygame.draw.circle(screen, BLACK, [x+500,y+250], radius)
+    pygame.draw.circle(screen, BLUE, [x+890,y+340], 80)
+    instruction = font.render("CLICK HERE", True, WHITE)
+    screen.blit(instruction, [x+830, y+340])
+
+def distance(x, y):
+    center_x = x + 135/2
+    center_y = y + 75/2
+    distance = math.sqrt((640-center_x)**2 + (335-center_y)**2)
+    return round(distance)
     
 WIDTH = 1280
 HEIGHT = 720
@@ -81,9 +116,17 @@ clock = pygame.time.Clock()
 button_click = 0
 button = pygame.Rect(1030,350,200,200)
 click = 0
+position = [0, 0]
+rect_x = 0
+rect_y = 0
+points = 0
 
+image = pygame.image.load("among_us.png").convert_alpha()
+ufo = pygame.image.load("ufos (2).jpg").convert()
+ufo.set_colorkey(BLACK)
+ufo_2 = pygame.image.load("ufos (3).jpg").convert()
+ufo_2.set_colorkey(BLACK)
 pygame.display.set_caption("Oscar's room")
-font = pygame.font.SysFont('verdana', 20)
 
 start_ticks=pygame.time.get_ticks()
 
@@ -91,45 +134,137 @@ running = True
 
 # ---------------------------
 while running:
-    seconds = round(pygame.time.get_ticks() - start_ticks / 1000)
-    wire_color = [GREY] * 20
-    for event in pygame.event.get():
-        if event.type == KEYDOWN:
-            if event.key == K_ESCAPE:
+    # for convenience
+    if light_bulb_part and test_thing:
+        seconds = round(pygame.time.get_ticks() - start_ticks / 1000)
+        wire_color = [GREY] * 20
+        for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    running = False
+            elif event.type == QUIT:
                 running = False
-        elif event.type == QUIT:
-            running = False
-        elif event.type == MOUSEBUTTONDOWN:
-            mouse_x, mouse_y = event.pos
-            distance = math.sqrt((mouse_x-1130) ** 2 + (mouse_y-450) ** 2)
-            if distance <= 100:
-                click = 1
-            else:
-                click = 0
-                button_click = 0
-    
-    button_click += click
-    for i in range (0, 20):
-        if button_click > 50 * i:
-            for j in range(0, i):
-                wire_color[i] = WHITE
-    print(wire_color[0])
-    
-    
-    window.fill(BLACK)
-    draw_lightbulb(window, 700, 10, 200)
-    draw_circuit(window, 20, 20, wire_color)
-    pygame.draw.circle(window, RED, [1130, 450],100)
+            elif event.type == MOUSEBUTTONDOWN:
+                mouse_x, mouse_y = event.pos
+                distance = math.sqrt((mouse_x-1130) ** 2 + (mouse_y-450) ** 2)
+                if distance <= 100:
+                    click = 1
+                else:
+                    click = 0
+                    button_click = 0
+        
+        button_click += click
+        for i in range (0, 20):
+            if button_click > 50 * i:
+                for j in range(0, i):
+                    wire_color[i] = WHITE
+                if i == 14:
+                    bulb_color = WHITE
 
-    font_1 = pygame.font.SysFont("verdana", 20, True, True)
-    instruction_1 = font_1.render("The light bulb in this room is disconnected from electricity.", True, WHITE)
-    window.blit(instruction_1, [10, 500])
-    instruction_2 = font_1.render("You need to reconnect electricity and make it shine", True, WHITE)
-    window.blit(instruction_2, [10, 530])
-    instruction_2 = font_1.render("before you see what's inside this room.", True, WHITE)
-    window.blit(instruction_2, [10, 560])
-    instruction_3 = font_1.render("CLICK HERE", True, BLACK)
-    window.blit(instruction_3, [1070,450])
+
+        if click == 0:
+            bulb_color = BLACK
+            opacity = 50
+        
+        
+        window.fill(BLACK)
+
+        if bulb_color == WHITE:
+            if opacity < 250:
+                opacity += 1
+            draw_circle_alpha(window, (242, 238, 208, opacity_2), [800,372], 150+radius)
+            radius += 10
+            if opacity_2 >= 10:
+                opacity_2 -= 5
+            else:
+                radius = 1
+                opacity_2 = 200
+            if radius >= 150:
+                draw_circle_alpha(window, (242, 238, 208, opacity_2), [800,372], 20+radius)
+        draw_lightbulb(window, 700, 10, opacity)
+        draw_circuit(window, 20, 20, wire_color)
+        pygame.draw.circle(window, RED, [1130, 450],100)
+
+        font_1 = pygame.font.SysFont("verdana", 20, True, True)
+        instruction_1 = font_1.render("The light bulb in this room is disconnected from electricity.", True, WHITE)
+        window.blit(instruction_1, [10, 500])
+        instruction_2 = font_1.render("You need to reconnect electricity and make it shine", True, WHITE)
+        window.blit(instruction_2, [10, 530])
+        instruction_2 = font_1.render("before you see what's inside this room.", True, WHITE)
+        window.blit(instruction_2, [10, 560])
+        instruction_3 = font_1.render("CLICK HERE", True, BLACK)
+        window.blit(instruction_3, [1070,450])
+
+        if wire_color[19] == WHITE:
+            light_bulb_part = False
+            camera_part = True
+
+
+    # for convenience
+    camera_part = True
+    if camera_part:
+        for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    running = False
+            elif event.type == QUIT:
+                running = False
+            elif event.type == MOUSEBUTTONDOWN:
+                mouse_x, mouse_y = event.pos
+                distance = math.sqrt((mouse_x-1030) ** 2 + (mouse_y-425) ** 2)
+                print(distance(rect_x, rect_y))
+                ufo_camera = 0
+                if distance <= 80 and ufo_camera <= 100+start_radius:
+                    points += 10
+                elif distance <= 80 and ufo_camera > 100+start_radius:
+                    points -= 5
+
+
+
+        first_time += 1
+        print(first_time)
+        if first_time == 1:
+            window.fill(LIGHT_YELLOW)
+            font_1 = pygame.font.SysFont("verdana", 30, False, True)
+            instruction_1 = font_1.render("Congratulations, you've turned on the light bulb!", True, BLACK)
+            instruction_2 = font_1.render("Now see what's inside this room", True, BLACK)
+            instruction_3 = font_1.render("You need to use the camera to capture UFO and get 150 points", True, BLACK)
+            instruction_4 = font_1.render("Once you've done the task, collect one key leading to the final room", True, BLACK)
+            window.blit(instruction_1, [200, 200])
+            window.blit(instruction_2, [200, 250])
+            window.blit(instruction_3, [200, 300])
+            window.blit(instruction_4, [200, 350])
+            window.blit(image, position)
+            time.sleep(10)
+        else:
+            window.fill(BLACK)
+            frame += 1
+            if frame // 100 == 0 and start_radius<=100:
+                start_radius += 0.5
+            elif start_radius >100:
+                start_radius -= 0.5
+            draw_camera(window, WIDTH/2-1000/2, HEIGHT/2-550/2, 100+start_radius)
+            camera_button = pygame.Rect(WIDTH/2-1000/2,HEIGHT/2-550/2,80,80)
+            if frame // 10000 == 0:
+                y_coor = random.randrange(335-100-round(start_radius - 1), 335+100+round(start_radius - 1))
+                if (start_radius+100)**2 - (y_coor-335) **2 < 0:
+                    print((y_coor-335) **2)
+                    print((start_radius+100)**2)
+                    print(start_radius+100)
+                    print(y_coor-335)
+                    print((start_radius+100)**2 - (y_coor-335) **2)
+                x_min = -1 * math.sqrt((start_radius+100)**2 - (y_coor-335) **2) + 640
+                x_max = math.sqrt((start_radius+100)**2 - (y_coor-335) **2) + 640
+                plus_what = 0
+            
+            if x_min+plus_what < x_max:
+                window.blit(ufo_2, [x_min+plus_what, y_coor])
+                rect_x = x_min + plus_what
+                rect_y = y_coor
+                plus_what += 1
+
+
+
 
     pygame.display.flip()
     clock.tick(30)
