@@ -431,18 +431,25 @@ import random
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREY = (200, 200, 200)
+RED = (255, 51, 51)
 LIGHTGREY = (181, 181, 181)
 GREEN = (0, 255, 0)
 DARKGREEN = (63, 166, 31)
 DARKGREY = (64, 64, 64)
 YELLOW = (255, 242, 0)
-RED = (207, 146, 136)
+LIGHTYELLOW = (226, 227, 166)
+LIGHTRED = (207, 146, 136)
 DARKRED = (255, 0, 0)
+BROWN = (133, 98, 68)
+DARKBROWN = (94, 66, 42)
+BLUE = (115, 195, 209)
 
 passcode_menu = False
 passcode_check = False
 have_key = False
 screen_menu = False
+vault_menu = False
+cabinet_menu = False
 
 speed_x = 0
 speed_y = 0
@@ -450,8 +457,8 @@ speed_y = 0
 speed_x2 = 0
 speed_y2 = 0
 
-y = 100
-x = 100
+x = 300
+y = 600
 
 count = 0
 ship_screen = 0
@@ -460,12 +467,14 @@ timer = 0
 passcode = ""
 passcode_length = 0
 
+character = pygame.Rect(x, y, 80, 80)
 passcode_area = pygame.Rect(600, 0, 100, 100)
-creeper = pygame.Rect(x, y, 80, 80)
 key_area = pygame.Rect(575, 550, 75, 50)
 screen_one_area = pygame.Rect(1190, 175, 20, 100)
 screen_two_area = pygame.Rect(1190, 365, 20, 100)
 screen_three_area = pygame.Rect(1190, 550, 20, 100)
+vault_area = pygame.Rect(300, 30, 100, 75)
+cabinet_area = pygame.Rect(75, 175, 50, 20)
 
 pygame.init()
 
@@ -475,6 +484,20 @@ screen = pygame.display.set_mode(size)
 font = pygame.font.SysFont('Segoe UI', 16, False, False)
 font_two = pygame.font.SysFont('MV Boli', 69, False, False)
 font_three = pygame.font.SysFont('Segoe UI', 375, False, False)
+font_four = pygame.font.SysFont('Bahnschrift', 25, False, False)
+
+#lists
+instructions = ["WASD to move", 
+                        "F to interact with items (a prompt will show up if you are close enough)", 
+                        "ESC to close menu's",
+                        "You are trying to get to the next room",
+                        "Click anywhere to begin"]
+prompts = ["F to pick up",
+           "F to search",
+           "Locked",
+           "F to interact",
+           "F to unlock",
+           "F to inspect"]
 
 def collision(obj_one, obj_two):
     if obj_one.colliderect(obj_two): 
@@ -493,17 +516,17 @@ def draw_door():
         for y in range(10, 81, 70):
             pygame.draw.rect(screen, LIGHTGREY, [x, y, 80, 60])
             
-def draw_creeperface(screen, x, y):
-    creeper.x = x 
-    creeper.y = y
-    pygame.draw.rect(screen, GREEN, creeper)
-    pygame.draw.rect(screen, BLACK, [x + 10, y + 20, 20, 20])
-    pygame.draw.rect(screen, BLACK, [x + 50, y + 20, 20, 20])
-    pygame.draw.rect(screen, BLACK, [x + 30, y + 40, 20, 20])
-    pygame.draw.rect(screen, BLACK, [x + 20, y + 50, 20, 20])
-    pygame.draw.rect(screen, BLACK, [x + 40, y + 50, 20, 20])
-    pygame.draw.rect(screen, BLACK, [x + 50, y + 70, 10, 10])
-    pygame.draw.rect(screen, BLACK, [x + 20, y + 70, 10, 10])
+def draw_character(screen, x, y):
+    character.x = x 
+    character.y = y
+    pygame.draw.rect(screen, RED, character)
+    pygame.draw.circle(screen, RED, [x + 40, y], 40)
+    pygame.draw.rect(screen, RED, [x, y + 80, 30, 20])
+    pygame.draw.rect(screen, RED, [x + 50, y + 80, 30, 20])
+    pygame.draw.rect(screen, BLUE, [x + 30, y - 5, 20, 30])
+    pygame.draw.circle(screen, BLUE, [x + 30, y + 10], 15)
+    pygame.draw.circle(screen, BLUE, [x + 50, y + 10], 15)
+    pygame.draw.circle(screen, WHITE, [x + 30, y + 5], 5)
 
 def draw_lock():
     pygame.draw.rect(screen, LIGHTGREY, [350, 10, 500, 700])
@@ -525,7 +548,14 @@ def draw_table():
         x = random.randrange(455, 846)
         y = random.randrange(455, 546)
         pygame.draw.circle(screen, WHITE, [x, y], 1)
-    
+
+def draw_vault():
+    pygame.draw.rect(screen, LIGHTGREY, vault_area)
+    pygame.draw.rect(screen, BLACK, vault_area, 2)
+    #key hole
+    pygame.draw.circle(screen, BLACK, [385, 60], 5)
+    pygame.draw.polygon(screen, BLACK, ([385, 60], [390, 75], [380, 75]))
+      
 def draw_background():
     pygame.draw.rect(screen, GREY, [0, 0, 1280, 150])
     pygame.draw.rect(screen, GREY, [0, 0, 75, 720])
@@ -535,6 +565,17 @@ def draw_background():
     pygame.draw.line(screen, BLACK, [75, 150], [1205, 150], 2)
     pygame.draw.line(screen, BLACK, [75, 150], [75, 720], 2)
     pygame.draw.line(screen, BLACK, [1205, 150], [1205, 720], 2)
+    #cabinet
+    pygame.draw.rect(screen, BROWN, [35, 70, 100, 75])
+    pygame.draw.polygon(screen, DARKBROWN, ([35, 145], [75, 232], [134, 232], [134, 145]))
+    pygame.draw.polygon(screen, BROWN, ([45, 150], [57, 177], [129, 177], [129, 150]))
+    pygame.draw.polygon(screen, BROWN, ([59, 183], [71, 210], [129, 210], [129, 183]))
+    pygame.draw.polygon(screen, BROWN, ([73, 216], [79, 228], [129, 228], [129, 216]))
+    pygame.draw.circle(screen, BLACK, [90, 165], 5)
+    pygame.draw.circle(screen, BLACK, [97, 197], 5)
+    pygame.draw.circle(screen, BLACK, [102, 223], 5)
+    pygame.draw.rect(screen, (179, 126, 118), [77, 233, 58, 100])
+    
     #lock
     pygame.draw.rect(screen, LIGHTGREY, [625, 30, 50, 70])
     pygame.draw.rect(screen, WHITE, [635, 40, 30, 10])
@@ -542,8 +583,8 @@ def draw_background():
         for y in range(60, 81, 20):
             pygame.draw.rect(screen, BLACK, [x, y, 10, 10])
     #vent
-    pygame.draw.rect(screen, (194, 207, 205), [100, 200, 100, 100])
-    for y in range(215, 276, 20):
+    pygame.draw.rect(screen, (194, 207, 205), [100, 600, 100, 100])
+    for y in range(615, 676, 20):
         pygame.draw.rect(screen, DARKGREY, [125, y, 50, 10])
     #screens
     pygame.draw.polygon(screen, DARKGREEN, ([1260, 75], [1225, 150], [1225, 300], [1260, 250]))
@@ -552,9 +593,10 @@ def draw_background():
     #chairs
     y = 0
     for i in range(3):
-        pygame.draw.rect(screen, (200, 88, 72), [1075, 175 + y, 100, 100])
+        
         pygame.draw.rect(screen, (171, 64, 50), [1075, 150 + y, 50, 100])
         pygame.draw.rect(screen, (217, 88, 72), [1075, 250 + y, 100, 40])
+        pygame.draw.rect(screen, (200, 88, 72), [1125, 175 + y, 50, 85])
         pygame.draw.circle(screen, (171, 64, 50), [1100, 150 + y], 25)
         y += 200
     
@@ -576,70 +618,92 @@ def table_collision(x, y):
         x = 320
     elif x < 900 and x > 894 and y > 320 and y < 565:
         x = 900
-    
-    if y > 320 and y < 326 and x > 320 and x < 900:
+    elif y > 320 and y < 326 and x > 320 and x < 900:
         y = 320
     elif y < 565 and y > 549 and x > 320 and x < 900:
         y = 565
         
     return x, y
 
-room_3 = False
+def desk_collision(x, y):
+    if y < 153 and x < 130:
+        y = 153
+    if x < 135 and y < 153:
+        x = 135
+        
+    return x, y
+
+room_3 = 1
+screen_ = 0
 
 clock = pygame.time.Clock()
 
 # -------- Main Program Loop -----------
-while not room_3:
+while room_3 == 1:
     # --- Event Processing
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            room_3 = True
+            room_3 = -1
+        
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            screen_ = 1
             
         elif event.type == pygame.KEYDOWN:
-            
-            if count == 0:
-                if event.key == pygame.K_w:
-                    speed_y = -5
-                elif event.key == pygame.K_a:
-                    speed_x = -5
-                elif event.key == pygame.K_s:
-                    speed_y2 = 5
-                elif event.key == pygame.K_d:
-                    speed_x2 = 5
-                
-                elif event.key == pygame.K_f:
-                    if collision(creeper, passcode_area) == True:
-                        count = 1
-                        passcode_menu = True
-                    elif collision(creeper, key_area) ==  True:
-                        have_key = True
-                    elif collision(creeper, screen_one_area) == True:
-                        count = -1
-                        screen_menu = True
-                    elif collision(creeper, screen_two_area) == True:
-                        count = -1
-                        screen_menu = True
-                    elif collision(creeper, screen_three_area) == True:
-                        count = -1
-                        screen_menu = True
+            if screen_ == 1:
+                if count == 0:
+                    if event.key == pygame.K_w:
+                        speed_y = -5
+                    elif event.key == pygame.K_a:
+                        speed_x = -5
+                    elif event.key == pygame.K_s:
+                        speed_y2 = 5
+                    elif event.key == pygame.K_d:
+                        speed_x2 = 5
+                    
+                    elif event.key == pygame.K_f:
+                        if collision(character, passcode_area):
+                            count = 1
+                            passcode_menu = True
+                        elif collision(character, key_area):
+                            have_key = True
+                        elif collision(character, screen_one_area):
+                            count = -1
+                            screen_menu = True
+                        elif collision(character, screen_two_area):
+                            count = -1
+                            screen_menu = True
+                        elif collision(character, screen_three_area):
+                            count = -1
+                            screen_menu = True
+                        elif collision(character, vault_area):
+                            if have_key == True:
+                                count = -1
+                                vault_menu = True
+                        elif collision(character, cabinet_area):
+                            count = -1
+                            cabinet_menu = True
+                            
+                elif count == 1:
+                    passcode += event.unicode
+                    passcode_length += 1
+                    if passcode_length >= 4:
+                        count = 2
                         
-            elif count == 1:
-                passcode += event.unicode
-                passcode_length += 1
-                if passcode_length >= 4:
-                    count = 2
+                elif count == 2:
+                    if event.key == pygame.K_RETURN:
+                        passcode_check = True
+                        
+                if event.key == pygame.K_ESCAPE:
+                    passcode_menu = False
+                    passcode_check = False
+                    screen_menu = False
+                    vault_menu = False
+                    cabinet_menu = False
+                    count = 0
+                    passcode = ""
+                    passcode_length = 0
+                    ship_screen = 0
                     
-            elif count == 2:
-                if event.key == pygame.K_RETURN:
-                    passcode_check = True
-                    
-            if event.key == pygame.K_ESCAPE:
-                passcode_menu = False
-                screen_menu = False
-                count = 0
-                passcode = ""
-                passcode_length = 0
-                ship_screen = 0
 
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_w:
@@ -657,86 +721,114 @@ while not room_3:
     
     x, y = not_offscreen(x, y, 75, 1125, 70, 640)
     x, y = table_collision(x, y)
+    x, y = desk_collision(x, y)
+    
     # --- Drawing Code
-
-    screen.fill(RED)
-    
-    draw_background()
-    draw_table()
-    draw_door()
-    
-    #Key
-    if have_key == False:
-        draw_key()
-        if collision(creeper, key_area) == True:
-            message = font.render("F to pick up", True, BLACK)
-            screen.blit(message, [575, 544])
+    screen.fill(LIGHTRED)
+    if screen_ == 0:
         
-    draw_creeperface(screen, x, y)
-    
-    #screens
-    if collision(creeper, screen_one_area) == True:
-        message = font.render("F to inspect", True, BLACK)
-        screen.blit(message, [1196, 175])
-        ship_screen = 1
-    elif collision(creeper, screen_two_area) == True:
-        message = font.render("F to inspect", True, BLACK)
-        screen.blit(message, [1196, 375])
-        ship_screen = 2
-    elif collision(creeper, screen_three_area) == True:
-        message = font.render("F to inspect", True, BLACK)
-        screen.blit(message, [1196, 575])
-        ship_screen = 3
+        f = 0
+        for i in range(4):
+            message = font_four.render(instructions[i], True, BLACK)
+            screen.blit(message, [200, 200 + f])
+            f += 50
+        message = font_four.render(instructions[4], True, BLACK)
+        screen.blit(message, [200, 600])
+    elif screen_ == 1:
+        draw_background()
+        draw_table()
+        draw_door()
+        draw_vault()
         
-    if screen_menu == True:
-        pygame.draw.rect(screen, DARKGREEN, [125, 75, 1024, 576])
-        clue_two = font_three.render("_ _ 5 _", True, BLACK)
-        screen.blit(clue_two, [150, 75])
-        if ship_screen == 1:
-            pygame.draw.rect(screen, DARKGREEN, [125, 75, 1024, 250])
-            pygame.draw.rect(screen, DARKGREEN, [125, 450, 1024, 192])
-        elif ship_screen == 2:
-            pygame.draw.rect(screen, DARKGREEN, [125, 325, 1024, 250])
-            pygame.draw.rect(screen, DARKGREEN, [125, 450, 1024, 192])
-        elif ship_screen == 3:
-            pygame.draw.rect(screen, DARKGREEN, [125, 75, 1024, 250])
-            pygame.draw.rect(screen, DARKGREEN, [125, 267, 1024, 192])
+        #Key
+        if have_key == False:
+            draw_key()
+            if collision(character, key_area):
+                message = font.render(prompts[0], True, BLACK)
+                screen.blit(message, [575, 544])
+        
+        draw_character(screen, x, y)
+        
+        #cabinet
+        if collision(character, cabinet_area):
+            message = font.render(prompts[1], True, BLACK)
+            screen.blit(message, [50, 120])
             
+        if cabinet_menu == True:
+            pygame.draw.rect(screen, WHITE, [125, 75, 1024, 576])
+            clue_four = font_three.render("_ _ _ t", True, BLACK)
+            screen.blit(clue_four, [150, 75])
+        
+        #vault
+        if collision(character, vault_area):
+            if have_key == False:
+                message = font.render(prompts[2], True, BLACK)
+                screen.blit(message, [325, 5])
+            else:
+                message = font.render(prompts[4], True, BLACK)
+                screen.blit(message, [315, 5])
+                
+        if vault_menu == True:
+                pygame.draw.rect(screen, LIGHTYELLOW, [125, 75, 1024, 576])
+                clue_three = font_three.render("_ 3 _ _", True, BLACK)
+                screen.blit(clue_three, [150, 75])
             
-    
-    #Passcode lock
-    if collision(creeper, passcode_area) == True:
-        message = font.render("F to interact", True, BLACK)
-        screen.blit(message, [610, 0])
-    
-    if passcode_menu == True:
-        draw_lock()
-        passcode_text = font_two.render(passcode, True, BLACK)
-        screen.blit(passcode_text, [520, 30])
+        #screens
+        message = font.render(prompts[5], True, BLACK)
         
-    if passcode_check == True:
-        if passcode == "h254":
-            pygame.draw.rect(screen, WHITE, [370, 30, 460, 100])
-            correct = font_two.render("Correct", True, GREEN)
-            screen.blit(correct, [475, 30])
-            timer += 1
-            if timer == 60:
-                timer = 0
-                room_3 = True
-        else:
-            passcode = ""
-            passcode_length = 0
-            incorrect = font_two.render("Incorrect", True, DARKRED)
-            screen.blit(incorrect, [450, 30])
-            timer += 1
-            if timer == 60:
-                timer = 0
-                count = 1
-                passcode_check = False 
+        if collision(character, screen_one_area):
+            screen.blit(message, [1196, 175])
+            ship_screen = 1
+        elif collision(character, screen_two_area):
+            screen.blit(message, [1196, 375])
+            ship_screen = 2
+        elif collision(character, screen_three_area):
+            screen.blit(message, [1196, 575])
+            ship_screen = 3
+            
+        if screen_menu == True:
+            pygame.draw.rect(screen, DARKGREEN, [125, 75, 1024, 576])
+            clue_two = font_three.render("_ _ 5 _", True, BLACK)
+            screen.blit(clue_two, [150, 75])
+            if ship_screen == 1:
+                pygame.draw.rect(screen, DARKGREEN, [125, 75, 1024, 250])
+                pygame.draw.rect(screen, DARKGREEN, [125, 450, 1024, 192])
+            elif ship_screen == 2:
+                pygame.draw.rect(screen, DARKGREEN, [125, 325, 1024, 250])
+                pygame.draw.rect(screen, DARKGREEN, [125, 450, 1024, 192])
+            elif ship_screen == 3:
+                pygame.draw.rect(screen, DARKGREEN, [125, 75, 1024, 250])
+                pygame.draw.rect(screen, DARKGREEN, [125, 267, 1024, 192])
         
+        #Passcode lock
+        if collision(character, passcode_area):
+            screen.blit(message, [610, 5])
+        
+        if passcode_menu == True:
+            draw_lock()
+            passcode_text = font_two.render(passcode, True, BLACK)
+            screen.blit(passcode_text, [520, 30])
+            
+        if passcode_check == True:
+            if passcode == "h35t":
+                pygame.draw.rect(screen, WHITE, [370, 30, 460, 100])
+                correct = font_two.render("Correct", True, GREEN)
+                screen.blit(correct, [475, 30])
+                timer += 1
+                if timer == 60:
+                    timer = 0
+                    room_3 = 2
+            else:
+                passcode = ""
+                passcode_length = 0
+                incorrect = font_two.render("Incorrect", True, DARKRED)
+                screen.blit(incorrect, [450, 30])
+                timer += 1
+                if timer == 60:
+                    timer = 0
+                    count = 1
+                    passcode_check = False
+            
     pygame.display.flip()
- 
+
     clock.tick(60)
- 
-# Close the window and quit.
-pygame.quit()
