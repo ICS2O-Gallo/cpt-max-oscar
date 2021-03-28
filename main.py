@@ -423,7 +423,6 @@ while running:
 pygame.quit()
 
 #Max's room
-
 import pygame
 import random
 
@@ -519,10 +518,10 @@ def draw_door():
 def draw_character(screen, x, y):
     character.x = x 
     character.y = y
-    pygame.draw.rect(screen, RED, character)
+    pygame.draw.rect(screen, RED, [x, y, 80, 70])
     pygame.draw.circle(screen, RED, [x + 40, y], 40)
-    pygame.draw.rect(screen, RED, [x, y + 80, 30, 20])
-    pygame.draw.rect(screen, RED, [x + 50, y + 80, 30, 20])
+    pygame.draw.rect(screen, RED, [x, y + 70, 30, 10])
+    pygame.draw.rect(screen, RED, [x + 50, y + 70, 30, 10])
     pygame.draw.rect(screen, BLUE, [x + 30, y - 5, 20, 30])
     pygame.draw.circle(screen, BLUE, [x + 30, y + 10], 15)
     pygame.draw.circle(screen, BLUE, [x + 50, y + 10], 15)
