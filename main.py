@@ -516,7 +516,6 @@ while room == 2:
     pygame.display.flip()
     clock.tick(30)
 
-
 #Max's room
 
 import pygame
@@ -593,6 +592,13 @@ prompts = ["F to pick up",
            "F to interact",
            "F to unlock",
            "F to inspect"]
+
+endgame_credits = [
+    "Developers: Oscar, Max, Emily",
+    "Thanks for playing!",
+    "As more unexpected events awaits, you continue on what seems like an endless journey through space...",
+    "After getting past the 3 rooms, you made it to the fourth and managed fixed the engine."
+    ]
 
 def collision(obj_one, obj_two):
     if obj_one.colliderect(obj_two): 
@@ -727,19 +733,21 @@ def desk_collision(x, y):
         
     return x, y
 
-
+room = 3
 screen_ = 0
 
 clock = pygame.time.Clock()
 
 # -------- Main Program Loop -----------
 while room == 3:
+    # --- Event Processing
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            room_3 = -1
+            room = -1
         
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            screen_ = 1
+            if screen_ == 0:
+                screen_ = 1
             
         elif event.type == pygame.KEYDOWN:
             if screen_ == 1:
@@ -912,7 +920,8 @@ while room == 3:
                 timer += 1
                 if timer == 60:
                     timer = 0
-                    room_3 = 2
+                    screen_ = 2
+                    a = 0
             else:
                 passcode = ""
                 passcode_length = 0
@@ -923,7 +932,23 @@ while room == 3:
                     timer = 0
                     count = 1
                     passcode_check = False
-            
+    elif screen_ == 2:    
+        screen.fill(WHITE)
+        a += 1
+        message_1 = font_four.render(endgame_credits[0], True, BLACK)
+        message_2 = font_four.render(endgame_credits[1], True, BLACK)
+        message_3 = font_four.render(endgame_credits[2], True, BLACK)
+        message_4 = font_four.render(endgame_credits[3], True, BLACK)
+        screen.blit(message_1, [450, -600 + a])
+        screen.blit(message_2, [500, -400 + a])
+        screen.blit(message_3, [30, -200 + a])
+        screen.blit(message_4, [100, -100 + a])
+        print(a)
+        if a == 1400:
+            room = -1
+
     pygame.display.flip()
 
     clock.tick(60)
+    
+pygame.quit()
