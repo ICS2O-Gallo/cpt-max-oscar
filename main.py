@@ -1,5 +1,3 @@
-room = 1
-# Emily C's room
 import pygame
 from pygame.locals import MOUSEBUTTONDOWN, K_LEFT, K_RIGHT
 import random
@@ -93,6 +91,7 @@ open_door = False
 character_animation = True
 character_animatio = False
 
+
 first_stage = 1
 start_instruction = 1
 second_stage = 0
@@ -101,6 +100,7 @@ third_stage = 0
 fourthstage = 0
 
 clock = pygame.time.Clock()
+room = 1
 pygame.mouse.set_visible(0)
 
 # -------- Main Program Loop -----------
@@ -108,7 +108,7 @@ while room == 1:
     # --- Main event loop
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            done = True
+            room = 2
         if event.type == MOUSEBUTTONDOWN:
             start_instruction += 1
             if second_stage == 1:
@@ -120,9 +120,8 @@ while room == 1:
                 second_stage = 1
 
             if button.collidepoint(x, y) and open_door is True:
-                door_animation += 5
+                door_animation += 10
                 print(door_animation)
-
 
     # --- Game logic should go here
 
@@ -246,7 +245,7 @@ while room == 1:
 
 # Close the window and quit.
 pygame.quit()
-
+room = 2
 
 #
 #
