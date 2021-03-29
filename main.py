@@ -108,7 +108,7 @@ while room == 1:
     # --- Main event loop
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            room = 2
+            room = -1
         if event.type == MOUSEBUTTONDOWN:
             start_instruction += 1
             if second_stage == 1:
