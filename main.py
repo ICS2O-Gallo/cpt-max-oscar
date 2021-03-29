@@ -381,6 +381,7 @@ rect_x = 0
 rect_y = 0
 points = 0
 ufo_list = []
+room = 2
 
 image = pygame.image.load("among_us.png").convert_alpha()
 ufo = pygame.image.load("ufos (2).jpg").convert()
@@ -394,7 +395,7 @@ start_ticks=pygame.time.get_ticks()
 running = True
 
 # ---------------------------
-while running:
+while running and room == 2:
     if light_bulb_part:
         seconds = round(pygame.time.get_ticks() - start_ticks / 1000)
         wire_color = [GREY] * 20
@@ -541,8 +542,10 @@ while running:
         window.blit(key_award, [300, 230])
         draw_key(window, 500, 400, LIGHT_YELLOW)
         window.blit(image, [-100, 10])
+        print(time)
         if time == 300:
             room = 3
+            print("lmao")
 
     pygame.display.flip()
     clock.tick(30)
