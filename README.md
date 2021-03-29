@@ -1,6 +1,6 @@
 # ICS2O - Computer Science CPT
 
-### Game Title
+### Among One
 Describe your game here.
 
 ### Group members:
