@@ -1,3 +1,4 @@
+room = 1
 # Emily C's room
 import pygame
 from pygame.locals import MOUSEBUTTONDOWN, K_LEFT, K_RIGHT
@@ -92,8 +93,6 @@ open_door = False
 character_animation = True
 character_animatio = False
 
-done = False
-
 first_stage = 1
 start_instruction = 1
 second_stage = 0
@@ -105,7 +104,7 @@ clock = pygame.time.Clock()
 pygame.mouse.set_visible(0)
 
 # -------- Main Program Loop -----------
-while not done:
+while room == 1:
     # --- Main event loop
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -384,10 +383,8 @@ pygame.display.set_caption("Oscar's room")
 
 start_ticks=pygame.time.get_ticks()
 
-running = True
-
 # ---------------------------
-while running:
+while room == 2:
     # for convenience
     if light_bulb_part and test_thing:
         seconds = round(pygame.time.get_ticks() - start_ticks / 1000)
@@ -517,13 +514,9 @@ while running:
                 rect_y = y_coor
                 plus_what += 1
 
-
-
-
     pygame.display.flip()
     clock.tick(30)
 
-pygame.quit()
 
 #Max's room
 
@@ -735,13 +728,13 @@ def desk_collision(x, y):
         
     return x, y
 
-room_3 = 1
+
 screen_ = 0
 
 clock = pygame.time.Clock()
 
 # -------- Main Program Loop -----------
-while room_3 == 1:
+while room == 3:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             room_3 = -1
