@@ -254,7 +254,7 @@ room = 2
 import pygame
 pygame.font.init()
 # for fonts: https://coderslegacy.com/python/pygame-font/ 
-from pygame.locals import K_ESCAPE, KEYDOWN, QUIT, MOUSEBUTTONDOWN
+from pygame.locals import K_ESCAPE, KEYDOWN, QUIT, MOUSEBUTTONDOWN, MOUSEBUTTONUP
 import math
 import random
 import time
@@ -279,12 +279,14 @@ opacity = 50
 opacity_2 = 200
 radius = 1
 light_bulb_part = True
+instruction_part = False
 camera_part = False
+key_part = False
 frame = 0
+time = 0
+
 first_time = 0
 start_radius = 0
-# for convenience
-test_thing = False
 font = pygame.font.SysFont('verdana', 20)
 
 def draw_battery(screen, x, y, length, width):
@@ -354,11 +356,17 @@ def draw_camera(screen, x, y, radius):
     instruction = font.render("CLICK HERE", True, WHITE)
     screen.blit(instruction, [x+830, y+340])
 
+def draw_key(screen, x, y, color):
+    pygame.draw.circle(screen, color, [x, y], 100)
+    pygame.draw.rect(screen, color, [x+90, y-20, 180, 40])
+    pygame.draw.rect(screen, color, [x+140, y+20, 20, 30])
+    pygame.draw.rect(screen, color, [x+200, y+20, 20, 30])
+
 def distance(x, y):
     center_x = x + 135/2
     center_y = y + 75/2
     distance = math.sqrt((640-center_x)**2 + (335-center_y)**2)
-    return round(distance)
+    return distance
     
 WIDTH = 1280
 HEIGHT = 720
@@ -368,10 +376,11 @@ clock = pygame.time.Clock()
 button_click = 0
 button = pygame.Rect(1030,350,200,200)
 click = 0
-position = [0, 0]
+position = [-100, 0]
 rect_x = 0
 rect_y = 0
 points = 0
+ufo_list = []
 
 image = pygame.image.load("among_us.png").convert_alpha()
 ufo = pygame.image.load("ufos (2).jpg").convert()
@@ -382,10 +391,11 @@ pygame.display.set_caption("Oscar's room")
 
 start_ticks=pygame.time.get_ticks()
 
+running = True
+
 # ---------------------------
-while room == 2:
-    # for convenience
-    if light_bulb_part and test_thing:
+while running:
+    if light_bulb_part:
         seconds = round(pygame.time.get_ticks() - start_ticks / 1000)
         wire_color = [GREY] * 20
         for event in pygame.event.get():
@@ -402,6 +412,8 @@ while room == 2:
                 else:
                     click = 0
                     button_click = 0
+            elif event.type == MOUSEBUTTONUP:
+                click = 0
         
         button_click += click
         for i in range (0, 20):
@@ -440,18 +452,34 @@ while room == 2:
         window.blit(instruction_1, [10, 500])
         instruction_2 = font_1.render("You need to reconnect electricity and make it shine", True, WHITE)
         window.blit(instruction_2, [10, 530])
-        instruction_2 = font_1.render("before you see what's inside this room.", True, WHITE)
-        window.blit(instruction_2, [10, 560])
+        instruction_4 = font_1.render("before you see what's inside this room.", True, WHITE)
+        window.blit(instruction_4, [10, 560])
         instruction_3 = font_1.render("CLICK HERE", True, BLACK)
         window.blit(instruction_3, [1070,450])
 
         if wire_color[19] == WHITE:
             light_bulb_part = False
+            instruction_part = True
+
+    if instruction_part:
+        time += 1
+        window.fill(LIGHT_YELLOW)
+        font_1 = pygame.font.SysFont("verdana", 30, False, True)
+        instruction_1 = font_1.render("Congratulations, you've turned on the light bulb!", True, BLACK)
+        instruction_2 = font_1.render("Now see what's inside this room", True, BLACK)
+        instruction_3 = font_1.render("You need to use the camera to capture UFO and get 150 points", True, BLACK)
+        instruction_4 = font_1.render("Once you've done the task, collect one key leading to the final room", True, BLACK)
+        window.blit(instruction_1, [300, 200])
+        window.blit(instruction_2, [300, 250])
+        window.blit(instruction_3, [300, 300])
+        window.blit(instruction_4, [300, 350])
+        window.blit(image, position)
+        if time == 300:
+            instruction_part = False
             camera_part = True
+            time = 0
 
 
-    # for convenience
-    camera_part = True
     if camera_part:
         for event in pygame.event.get():
             if event.type == KEYDOWN:
@@ -462,56 +490,59 @@ while room == 2:
             elif event.type == MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = event.pos
                 distance = math.sqrt((mouse_x-1030) ** 2 + (mouse_y-425) ** 2)
-                print(distance(rect_x, rect_y))
-                ufo_camera = 0
-                if distance <= 80 and ufo_camera <= 100+start_radius:
+                center_x = rect_x + 135/2
+                center_y = rect_y + 75/2
+                ufo_camera = math.sqrt((640-center_x)**2 + (335-center_y)**2)
+                if frame % 100 > 50 and frame % 100 <= 99:
+                    points -= 5
+                elif distance <= 80 and ufo_camera <= 100+start_radius:
                     points += 10
                 elif distance <= 80 and ufo_camera > 100+start_radius:
                     points -= 5
 
 
-
-        first_time += 1
-        print(first_time)
-        if first_time == 1:
-            window.fill(LIGHT_YELLOW)
-            font_1 = pygame.font.SysFont("verdana", 30, False, True)
-            instruction_1 = font_1.render("Congratulations, you've turned on the light bulb!", True, BLACK)
-            instruction_2 = font_1.render("Now see what's inside this room", True, BLACK)
-            instruction_3 = font_1.render("You need to use the camera to capture UFO and get 150 points", True, BLACK)
-            instruction_4 = font_1.render("Once you've done the task, collect one key leading to the final room", True, BLACK)
-            window.blit(instruction_1, [200, 200])
-            window.blit(instruction_2, [200, 250])
-            window.blit(instruction_3, [200, 300])
-            window.blit(instruction_4, [200, 350])
-            window.blit(image, position)
-            time.sleep(10)
-        else:
-            window.fill(BLACK)
-            frame += 1
-            if frame // 100 == 0 and start_radius<=100:
-                start_radius += 0.5
-            elif start_radius >100:
-                start_radius -= 0.5
-            draw_camera(window, WIDTH/2-1000/2, HEIGHT/2-550/2, 100+start_radius)
-            camera_button = pygame.Rect(WIDTH/2-1000/2,HEIGHT/2-550/2,80,80)
-            if frame // 10000 == 0:
-                y_coor = random.randrange(335-100-round(start_radius - 1), 335+100+round(start_radius - 1))
-                if (start_radius+100)**2 - (y_coor-335) **2 < 0:
-                    print((y_coor-335) **2)
-                    print((start_radius+100)**2)
-                    print(start_radius+100)
-                    print(y_coor-335)
-                    print((start_radius+100)**2 - (y_coor-335) **2)
+        window.fill(BLACK)
+        amount = 0
+        frame += 1
+        if start_radius<=100:
+            start_radius += 0.5
+        if start_radius >100:
+            start_radius = 20
+            start_radius -= 0.5
+        draw_camera(window, WIDTH/2-1000/2, HEIGHT/2-550/2, 100+start_radius)
+        camera_button = pygame.Rect(WIDTH/2-1000/2,HEIGHT/2-550/2,80,80)
+        if frame % 100 == 0:
+            y_coor = random.randrange(335-100-round(start_radius), 335+100+round(start_radius))
+            if((start_radius+100)**2 - (y_coor-335) **2 > 0):
                 x_min = -1 * math.sqrt((start_radius+100)**2 - (y_coor-335) **2) + 640
                 x_max = math.sqrt((start_radius+100)**2 - (y_coor-335) **2) + 640
-                plus_what = 0
-            
-            if x_min+plus_what < x_max:
-                window.blit(ufo_2, [x_min+plus_what, y_coor])
-                rect_x = x_min + plus_what
-                rect_y = y_coor
-                plus_what += 1
+                x_coor = random.randrange(round(x_min + 1), round(x_max - 1))
+                ufo_list.append([x_coor, y_coor])
+        if len(ufo_list) != 0:
+            if frame % 100 > 0 and frame % 100 < 50:
+                window.blit(ufo_2, ufo_list[len(ufo_list)-1])
+                rect_x, rect_y = ufo_list[len(ufo_list)-1]
+
+
+        points_print = font_1.render(f"Your point right now is {points}", True, WHITE)
+        window.blit(points_print, [10, 5])
+
+        if points > 150:
+            camera_part = False
+            key_part = True
+
+    if key_part:
+        time += 1
+        window.fill(BLACK)
+        font_1 = pygame.font.SysFont("verdana", 30, False, True)
+        congrat = font_1.render("Congratulations, you've completed the task in this room", True, WHITE)
+        key_award = font_1.render("And you are awarded with one key!", True, WHITE)
+        window.blit(congrat, [300, 200])
+        window.blit(key_award, [300, 230])
+        draw_key(window, 500, 400, LIGHT_YELLOW)
+        window.blit(image, [-100, 10])
+        if time == 300:
+            room = 3
 
     pygame.display.flip()
     clock.tick(30)
