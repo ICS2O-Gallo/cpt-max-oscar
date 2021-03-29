@@ -1,3 +1,104 @@
+# Oscar Sun's Menu
+import pygame
+pygame.font.init()
+# for fonts: https://coderslegacy.com/python/pygame-font/ 
+from pygame.locals import K_ESCAPE, KEYDOWN, QUIT, MOUSEBUTTONDOWN, MOUSEBUTTONUP
+import math
+import random
+import time
+
+pygame.init()
+
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
+BLUE = (0, 0, 225)
+GREY = (146, 160, 173)
+opacity = 255
+opacity_2 = 255
+opacity_3 = 255
+opacity_4 = 255
+opacity_5 = 255
+opacity_6 = 255
+opacity_7 = 255
+font = pygame.font.SysFont('verdana', 20)
+    
+WIDTH = 1280
+HEIGHT = 720
+SIZE = (WIDTH, HEIGHT)
+window = pygame.display.set_mode(SIZE)
+clock = pygame.time.Clock()
+
+start_ticks=pygame.time.get_ticks()
+image = pygame.image.load("background (1).jpg").convert()
+image_2 = pygame.image.load("among_us_background.jpg").convert()
+
+running = True
+# ---------------------------
+while running:
+    for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    running = False
+            elif event.type == QUIT:
+                running = False
+    window.blit(image_2, [0, 0])
+    font_1 = pygame.font.SysFont("verdana", 50, True, True)
+    instruction_1 = font_1.render("Welcome to Among One !!", True, WHITE)
+    font_2 = pygame.font.SysFont("verdana", 25, True, True)
+    font_3 = pygame.font.SysFont("verdana", 100, True, True)
+    game_title = font_3.render("Among", True, RED)
+    window.blit(game_title, [830, 190])
+    game_title_2 = font_3.render("One", True, RED)
+    window.blit(game_title_2, [860, 290])
+    instruction_2 = font_2.render("Unfortunately, you are trapped in a spaceship by yourself,", True, WHITE)
+    instruction_3 = font_2.render("and from the sound of the alarm, there is something seriously wrong with the engine.", True, WHITE)
+    instruction_4 = font_2.render("More unfortunately, you need three keys to unlock the engine room to fix the engine", True, WHITE)
+    instruction_5 = font_2.render("and the keys are distributed in three different rooms.", True, WHITE)
+    instruction_6 = font_2.render("To fix the engine, you would need to complete the tasks in three different rooms and gather the keys.", True, WHITE)
+    instruction_7 = font_2.render("Time is urgent, quickly start by going into the first room !", True, WHITE)
+    instruction_1.set_alpha(opacity)
+    window.blit(instruction_1, [10, 10])
+    if opacity != 0:
+        opacity -= 5
+    if opacity == 0:
+        instruction_2.set_alpha(opacity_2)
+        window.blit(instruction_2, [10, 10])
+        if opacity_2 != 0:
+            opacity_2 -= 1
+        if opacity_2 == 0:
+            instruction_3.set_alpha(opacity_3)
+            window.blit(instruction_3, [10, 10])
+            if opacity_3 != 0:
+                opacity_3 -= 1
+            if opacity_3 == 0:
+                instruction_4.set_alpha(opacity_4)
+                window.blit(instruction_4, [10, 10])
+                if opacity_4 != 0:
+                    opacity_4 -= 1
+                if opacity_4 == 0:
+                    instruction_5.set_alpha(opacity_5)
+                    window.blit(instruction_5, [10, 10])
+                    if opacity_5 != 0:
+                        opacity_5 -= 1
+                    if opacity_5 == 0:
+                        instruction_6.set_alpha(opacity_6)
+                        window.blit(instruction_6, [10, 10])
+                        if opacity_6 != 0:
+                            opacity_6 -= 1
+                        if opacity_6 == 0:
+                            instruction_7.set_alpha(opacity_7)
+                            window.blit(instruction_7, [10, 10])
+                            if opacity_7 == 0:
+                                opacity_7 -= 1
+                                room = 1
+
+    pygame.display.flip()
+    clock.tick(30)
+
+
+# Emily Cheng's Room
 import pygame
 from pygame.locals import MOUSEBUTTONDOWN, K_LEFT, K_RIGHT
 import random
