@@ -382,8 +382,9 @@ while room == 1:
     screen.fill(WHITE)
 
     if loading is True:
-        timeloading += 1
+    for something in range(2):
         screen.blit(loading_i, [0, 0])
+        timeloading += 1
         if timeloading > 10:
             screen.blit(loading_ii, [0, 0])
         if timeloading > 30:
@@ -392,7 +393,8 @@ while room == 1:
             screen.blit(loading_iv, [0, 0])
         if timeloading > 70:
             timeloading = 0
-            loading = False
+            if something == 1:
+                loading = False
 
     if first_stage == 1 and loading is False:
         screen.blit(firstbackground, [0, 0])
