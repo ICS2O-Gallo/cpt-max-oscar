@@ -1,4 +1,5 @@
 # Oscar Sun's Menu
+
 import pygame
 
 pygame.font.init()
@@ -47,7 +48,7 @@ while room == 0:
     window.blit(image_2, [0, 0])
     font_1 = pygame.font.SysFont("verdana", 50, True, True)
     instruction_1 = font_1.render("Welcome to Among One !!", True, WHITE)
-    font_2 = pygame.font.SysFont("verdana", 25, True, True)
+    font_2 = pygame.font.SysFont("verdana", 20, True, True)
     font_3 = pygame.font.SysFont("verdana", 100, True, True)
     game_title = font_3.render("Among", True, RED)
     window.blit(game_title, [830, 190])
@@ -796,7 +797,7 @@ while room == 2:
     if instruction_part:
         time += 1
         window.fill(LIGHT_YELLOW)
-        font_1 = pygame.font.SysFont("verdana", 30, False, True)
+        font_1 = pygame.font.SysFont("verdana", 20, False, True)
         instruction_1 = font_1.render("Congratulations, you've turned on the light bulb!", True, BLACK)
         instruction_2 = font_1.render("Now see what's inside this room", True, BLACK)
         instruction_3 = font_1.render("You need to use the camera to capture UFO and get 150 points", True, BLACK)
@@ -874,7 +875,6 @@ while room == 2:
         print(time)
         if time == 300:
             room = 3
-            print("lmao")
 
     pygame.display.flip()
     clock.tick(30)
@@ -960,7 +960,7 @@ endgame_credits = [
     "Developers: Oscar, Max, Emily",
     "Thanks for playing!",
     "As more unexpected events awaits, you continue on what seems like an endless journey through space...",
-    "After getting past the 3 rooms, you made it to the fourth and managed fixed the engine."
+    "After getting past the 3 rooms, you made it to the fourth and managed to fix the engine."
 ]
 
 
@@ -1107,9 +1107,8 @@ def desk_collision(x, y):
 
     return x, y
 
-
-room = 3
 screen_ = 0
+print(screen_)
 
 clock = pygame.time.Clock()
 
@@ -1120,9 +1119,8 @@ while room == 3:
         if event.type == pygame.QUIT:
             pygame.quit()
 
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            if screen_ == 0:
-                screen_ = 1
+        elif event.type == pygame.MOUSEBUTTONDOWN and screen_ == 0:
+            screen_ = 1
 
         elif event.type == pygame.KEYDOWN:
             if screen_ == 1:
