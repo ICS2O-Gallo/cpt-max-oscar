@@ -931,7 +931,7 @@ instructions = ["WASD to move",
                 "F to interact with items (a prompt will show up if you are close enough)",
                 "ESC to close menu's",
                 "You are trying to get to the next room",
-                "Click anywhere to begin"]
+                "Press space to begin"]
 prompts = ["F to pick up",
            "F to search",
            "Locked",
@@ -987,7 +987,8 @@ def draw_lock():
         for y in range(170, 451, 140):
             pygame.draw.rect(screen, BLACK, [x, y, 100, 100])
     pygame.draw.rect(screen, BLACK, [550, 585, 100, 100])
-
+    message = font_four.render("Use keyboard to type", True, BLACK)
+    screen.blit(message, [860, 290])
 
 def draw_table():
     pygame.draw.rect(screen, (179, 126, 118), [410, 400, 480, 275])
@@ -1101,11 +1102,12 @@ while room == 3:
         if event.type == pygame.QUIT:
             pygame.quit()
 
-        elif event.type == pygame.MOUSEBUTTONDOWN and screen_ == 0:
-            screen_ = 1
-
         elif event.type == pygame.KEYDOWN:
-            if screen_ == 1:
+            if screen_ == 0:
+                if event.key == pygame.K_SPACE:
+                    screen_ = 1
+                
+            elif screen_ == 1:
                 if count == 0:
                     if event.key == pygame.K_w:
                         speed_y = -5
