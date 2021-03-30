@@ -305,7 +305,6 @@ while room == 1:
             if second_stage == 1:
                 door_instruction += 1
             x, y = event.pos
-            print(x, y)
 
             if button.collidepoint(x, y) and start_instruction > 2:
                 second_stage = 1
@@ -313,7 +312,6 @@ while room == 1:
             if button.collidepoint(x, y) and open_door is True:
                 if third_stage == 0:
                     door_animation += 20
-                    print(door_animation)
 
             if electric_button.collidepoint(x, y) and third_stage == 1 and loading is False:
                 loading = True
@@ -382,19 +380,19 @@ while room == 1:
     screen.fill(WHITE)
 
     if loading is True:
-    for something in range(2):
-        screen.blit(loading_i, [0, 0])
-        timeloading += 1
-        if timeloading > 10:
-            screen.blit(loading_ii, [0, 0])
-        if timeloading > 30:
-            screen.blit(loading_iii, [0, 0])
-        if timeloading > 50:
-            screen.blit(loading_iv, [0, 0])
-        if timeloading > 70:
-            timeloading = 0
-            if something == 1:
-                loading = False
+        for something in range(2):
+            screen.blit(loading_i, [0, 0])
+            timeloading += 1
+            if timeloading > 10:
+                screen.blit(loading_ii, [0, 0])
+            if timeloading > 30:
+                screen.blit(loading_iii, [0, 0])
+            if timeloading > 50:
+                screen.blit(loading_iv, [0, 0])
+            if timeloading > 70:
+                timeloading = 0
+                if something == 1:
+                    loading = False
 
     if first_stage == 1 and loading is False:
         screen.blit(firstbackground, [0, 0])
@@ -1093,7 +1091,6 @@ def desk_collision(x, y):
     return x, y
 
 screen_ = 0
-print(screen_)
 
 clock = pygame.time.Clock()
 
@@ -1292,6 +1289,7 @@ while room == 3:
                     count = 1
                     passcode_check = False
     elif screen_ == 2:
+        #end screen
         screen.fill(WHITE)
         a += 1
         message_1 = font_four.render(endgame_credits[0], True, BLACK)
