@@ -1,13 +1,11 @@
-# Oscar Sun's Menu
-
 import pygame
+import math
+import random
+# Oscar Sun's Menu
 
 pygame.font.init()
 # for fonts: https://coderslegacy.com/python/pygame-font/ 
 from pygame.locals import K_ESCAPE, KEYDOWN, QUIT, MOUSEBUTTONDOWN, MOUSEBUTTONUP
-import math
-import random
-import time
 
 pygame.init()
 
@@ -97,7 +95,6 @@ while room == 0:
                             instruction_7.set_alpha(opacity_7)
                             window.blit(instruction_7, [10, 10])
                             opacity_7 -= 1
-                            print(opacity_7)
                             if opacity_7 == 0:
                                 room = 1
 
@@ -105,10 +102,6 @@ while room == 0:
     clock.tick(30)
 
 # Emily Cheng's Room
-
-import pygame
-from pygame.locals import MOUSEBUTTONDOWN
-import random
 
 # colours
 BLACK = (0, 0, 0)
@@ -578,14 +571,9 @@ while room == 1:
 #
 #
 # Oscar Sun's Room
-import pygame
 
 pygame.font.init()
 # for fonts: https://coderslegacy.com/python/pygame-font/ 
-from pygame.locals import K_ESCAPE, KEYDOWN, QUIT, MOUSEBUTTONDOWN, MOUSEBUTTONUP
-import math
-import random
-import time
 
 pygame.init()
 
@@ -650,7 +638,6 @@ def draw_circle_alpha(surface, color, center, radius):
     pygame.draw.circle(shape_surf, color, (radius, radius), radius)
     surface.blit(shape_surf, target_rect)
 
-
 def draw_circuit(screen, x, y, list):
     pygame.draw.rect(screen, WHITE, [x, y, 450, 450], 10)
     pygame.draw.line(screen, list[1], [x + 100, y + 350], [x + 50, y + 350], 5)
@@ -691,7 +678,7 @@ def draw_camera(screen, x, y, radius):
     screen.blit(instruction, [x + 830, y + 340])
 
 
-def draw_key(screen, x, y, color):
+def draw_key2(screen, x, y, color):
     pygame.draw.circle(screen, color, [x, y], 100)
     pygame.draw.rect(screen, color, [x + 90, y - 20, 180, 40])
     pygame.draw.rect(screen, color, [x + 140, y + 20, 20, 30])
@@ -870,9 +857,8 @@ while room == 2:
         key_award = font_1.render("And you are awarded with one key!", True, WHITE)
         window.blit(congrat, [300, 200])
         window.blit(key_award, [300, 230])
-        draw_key(window, 500, 400, LIGHT_YELLOW)
+        draw_key2(window, 500, 400, LIGHT_YELLOW)
         window.blit(image, [-100, 10])
-        print(time)
         if time == 300:
             room = 3
 
@@ -880,9 +866,6 @@ while room == 2:
     clock.tick(30)
 
 # Max's room
-
-import pygame
-import random
 
 # Colours
 BLACK = (0, 0, 0)
@@ -1084,7 +1067,6 @@ def not_offscreen(x, y, a, b, c, d):
         y = d
 
     return x, y
-
 
 def table_collision(x, y):
     if x > 320 and x < 326 and y > 320 and y < 565:
@@ -1316,7 +1298,6 @@ while room == 3:
         screen.blit(message_2, [500, -400 + a])
         screen.blit(message_3, [30, -200 + a])
         screen.blit(message_4, [100, -100 + a])
-        print(a)
         if a == 1400:
             pygame.quit()
 
